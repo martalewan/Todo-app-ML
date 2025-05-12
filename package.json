@@ -1,0 +1,19 @@
+{
+  "name": "todo-app",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "start": "concurrently \"npm:start-frontend\" \"npm:start-backend\"",
+    "start-frontend": "npm --workspace frontend run start",
+    "start-backend": "npm --workspace backend run start",
+    "lint": "npm run lint-frontend && npm run lint-backend",
+    "lint-frontend": "npm --workspace frontend run lint",
+    "lint-backend": "npm --workspace backend run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
