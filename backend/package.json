@@ -2,13 +2,15 @@
   "type": "module",
   "scripts": {
     "lint": "eslint --ext .js src",
-    "start": "node --watch src/index.js"
+    "start": "node --watch src/index.js",
+    "test": "node --experimental-vm-modules ../node_modules/.bin/jest"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2"
   },
   "devDependencies": {
-    "eslint": "^8.57.0"
+    "eslint": "^8.57.0",
+    "supertest": "^7.1.1"
   }
 }
