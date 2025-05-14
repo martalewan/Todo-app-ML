@@ -6,10 +6,16 @@ beforeEach(() => {
   resetTodosModel();
 });
 
+const api = request(app);
+const createTodo = async (text) => {
+  const response = await api.post('/todos').send({ text });
+  return response.body;
+};
+
 describe('GET /todos', () => {
     it('should return a list of todos', async () => {
-    await request(app).post('/todos').send({ text: 'Todo 1' });
-    const response = await request(app).get('/todos');
+    await createTodo('Todo 1');
+    const response = await api.get('/todos');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([
@@ -18,7 +24,7 @@ describe('GET /todos', () => {
   });
 
   it('should return an empty list when there are no todos', async () => {
-    const response = await request(app).get('/todos');
+    const response = await api.get('/todos');
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual([]);
   });
@@ -27,7 +33,8 @@ describe('GET /todos', () => {
 describe('POST /todos', () => {
   it('should add a new todo', async () => {
     const newTodo = { text: 'New Todo' };
-    const response = await request(app).post('/todos').send(newTodo);
+    const response = await api.post('/todos').send(newTodo);
+    
     expect(response.statusCode).toBe(201);
     expect(response.body).toEqual({
       id: 1,
@@ -37,46 +44,40 @@ describe('POST /todos', () => {
   });
 
   it('should return 400 if no text is provided', async () => {
-    const response = await request(app).post('/todos').send({});
+    const response = await api.post('/todos').send({});
     expect(response.statusCode).toBe(400);
   });
 })
 
 describe('DELETE /todos/:id', () => {
   it('should delete a todo', async () => {
-    const createResponse = await request(app)
-      .post('/todos')
-      .send({ text: 'Todo to delete' });
+    const createdTodo = await createTodo('Todo to delete');
+    const newTodoId = createdTodo.id;
 
-    const newTodoId = createResponse.body.id;
-
-    const deleteResponse = await request(app).delete(`/todos/${newTodoId}`);
+    const deleteResponse = await api.delete(`/todos/${newTodoId}`);
     expect(deleteResponse.statusCode).toBe(204);
 
-    const todos = (await request(app).get('/todos')).body;
+    const todos = (await api.get('/todos')).body;
     expect(todos).toEqual([]);
   });
 
   it('should return 404 if todo not found', async () => {
-    const response = await request(app).delete('/todos/999');
+    const response = await api.delete('/todos/999');
     expect(response.statusCode).toBe(404);
   });
 
   it('should return 400 if id is not a number', async () => {
-    const response = await request(app).delete('/todos/abc');
+    const response = await api.delete('/todos/abc');
     expect(response.statusCode).toBe(400);
   });
 });
 
 describe('PUT /todos/:id', () => {
   it('should update a todo', async () => {
-    const createResponse = await request(app)
-      .post('/todos')
-      .send({ text: 'Todo to update' });
+    const createdTodo = await createTodo('Todo to update');
+    const newTodoId = createdTodo.id;
 
-    const newTodoId = createResponse.body.id;
-
-    const updateResponse = await request(app)
+    const updateResponse = await api
       .put(`/todos/${newTodoId}`)
       .send({ text: 'Updated Todo', completed: true });
 
@@ -89,12 +90,12 @@ describe('PUT /todos/:id', () => {
   });
 
   it('should return 404 if todo not found', async () => {
-    const response = await request(app).put('/todos/999').send({ text: 'Updated' });
+    const response = await api.put('/todos/999').send({ text: 'Updated' });
     expect(response.statusCode).toBe(404);
   });
 
   it('should return 400 if id is not a number', async () => {
-    const response = await request(app).put('/todos/abc').send({ text: 'Updated' });
+    const response = await api.put('/todos/abc').send({ text: 'Updated' });
     expect(response.statusCode).toBe(400);
   });
 });
