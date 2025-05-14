@@ -20,7 +20,15 @@ export const deleteTodoModel = (id) => {
 export const updateTodoModel = (id, updates) => {
   const todo = todos.find((t) => t.id === id);
   if (!todo) return null;
-  Object.assign(todo, updates);
+
+  const { text, completed } = updates;
+  
+  if (typeof text === 'string') {
+    todo.text = text.trim();
+  }
+  if (typeof completed === 'boolean') {
+    todo.completed = completed;
+  }
   return todo;
 };
 
