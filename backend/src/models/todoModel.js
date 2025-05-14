@@ -1,9 +1,9 @@
 let todos = [];
 let nextId = 1;
 
-export const getTodos = () => todos;
+export const getTodosModel = () => todos;
 
-export const addTodo = (text) => {
+export const addTodoModel = (text) => {
   const newTodo = {
     id: nextId++,
     text,
@@ -13,18 +13,18 @@ export const addTodo = (text) => {
   return newTodo;
 };
 
-export const deleteTodo = (id) => {
+export const deleteTodoModel = (id) => {
   todos = todos.filter((todo) => todo.id !== id);
 };
 
-export const updateTodo = (id, updates) => {
+export const updateTodoModel = (id, updates) => {
   const todo = todos.find((t) => t.id === id);
   if (!todo) return null;
   Object.assign(todo, updates);
   return todo;
 };
 
-export const resetTodos = () => {
+export const resetTodosModel = () => {
   todos = [];
   nextId = 1;
 };
