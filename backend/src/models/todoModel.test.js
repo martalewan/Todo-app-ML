@@ -38,7 +38,7 @@ test('updateTodoModel updates a todo', () => {
 })
 
 test('updateTodoModel returns null for missing id', () => {
-  expect(updateTodoModel(999, { text: 'Nope' })).toBeNull()
+  expect(updateTodoModel(999, { text: 'null' })).toBeNull()
 })
 
 test('resetTodosModel clears all todos and resets id', () => {
