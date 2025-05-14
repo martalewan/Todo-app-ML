@@ -1,38 +1,49 @@
-let todos = [];
-let nextId = 1;
+import { loadTodos, saveTodos } from './todosStorage.js'
 
-export const getTodosModel = () => todos;
+let todos = loadTodos()
+let nextId = todos.length ? todos[todos.length - 1].id + 1 : 1
+
+export function getTodosModel() {
+  return todos
+}
 
 export const addTodoModel = (text) => {
   const newTodo = {
     id: nextId++,
-    text,
+    text: text.trim(),
     completed: false,
-  };
-  todos.push(newTodo);
-  return newTodo;
-};
+  }
+  todos.push(newTodo)
+  saveTodos(todos)
+  return newTodo
+}
 
 export const deleteTodoModel = (id) => {
-  todos = todos.filter((todo) => todo.id !== id);
-};
+  const initialLength = todos.length
+  todos = todos.filter((todo) => todo.id !== id)
+  if (todos.length !== initialLength) {
+    saveTodos(todos)
+  }
+}
 
 export const updateTodoModel = (id, updates) => {
-  const todo = todos.find((t) => t.id === id);
-  if (!todo) return null;
+  const todo = todos.find((t) => t.id === id)
+  if (!todo) return null
 
-  const { text, completed } = updates;
-  
+  const { text, completed } = updates
+
   if (typeof text === 'string') {
-    todo.text = text.trim();
+    todo.text = text.trim()
   }
   if (typeof completed === 'boolean') {
-    todo.completed = completed;
+    todo.completed = completed
   }
-  return todo;
-};
+  saveTodos(todos)
+  return todo
+}
 
 export const resetTodosModel = () => {
-  todos = [];
-  nextId = 1;
-};
+  todos = []
+  nextId = 1
+  saveTodos(todos)
+}
