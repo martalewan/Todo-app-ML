@@ -1,101 +1,109 @@
-import request from 'supertest';
-import app from '../app.js';
-import { resetTodosModel } from '../models/todoModel.js';
+import request from 'supertest'
+import app from '../app.js'
 
-beforeEach(() => {
-  resetTodosModel();
-});
+const api = request(app)
 
-const api = request(app);
-const createTodo = async (text) => {
-  const response = await api.post('/todos').send({ text });
-  return response.body;
-};
+const addListHandler = async (title = 'Test List') => {
+  const response = await api.post('/lists').send({ title })
+  return response.body
+}
 
-describe('GET /todos', () => {
-    it('should return a list of todos', async () => {
-    await createTodo('Todo 1');
-    const response = await api.get('/todos');
+const createTodo = async (listId, text) => {
+  const response = await api.post(`/lists/${listId}/todos`).send({ text })
+  return response.body
+}
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual([
-      { id: 1, text: 'Todo 1', completed: false },
-    ]);
-  });
+describe('GET /lists/:listId/todos', () => {
+  it('should return a list of todos in the list', async () => {
+    const list = await addListHandler()
+    await createTodo(list.id, 'Todo 1')
 
-  it('should return an empty list when there are no todos', async () => {
-    const response = await api.get('/todos');
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual([]);
-  });
-});
+    const response = await api.get(`/lists/${list.id}/todos`)
+    expect(response.statusCode).toBe(200)
+    expect(response.body).toEqual([{ id: 1, text: 'Todo 1', completed: false }])
+  })
 
-describe('POST /todos', () => {
-  it('should add a new todo', async () => {
-    const newTodo = { text: 'New Todo' };
-    const response = await api.post('/todos').send(newTodo);
-    
-    expect(response.statusCode).toBe(201);
+  it('should return 404 for non-existing list', async () => {
+    const response = await api.get('/lists/999/todos')
+    expect(response.statusCode).toBe(404)
+  })
+})
+
+describe('POST /lists/:listId/todos', () => {
+  it('should add a new todo to the list', async () => {
+    const list = await addListHandler()
+    const newTodo = { text: 'New Todo' }
+    const response = await api.post(`/lists/${list.id}/todos`).send(newTodo)
+
+    expect(response.statusCode).toBe(201)
     expect(response.body).toEqual({
       id: 1,
       text: 'New Todo',
       completed: false,
-    });
-  });
+    })
+  })
 
   it('should return 400 if no text is provided', async () => {
-    const response = await api.post('/todos').send({});
-    expect(response.statusCode).toBe(400);
-  });
+    const list = await addListHandler()
+    const response = await api.post(`/lists/${list.id}/todos`).send({})
+    expect(response.statusCode).toBe(400)
+  })
+
+  it('should return 404 if list not found', async () => {
+    const response = await api.post('/lists/999/todos').send({ text: 'Test' })
+    expect(response.statusCode).toBe(404)
+  })
 })
 
-describe('DELETE /todos/:id', () => {
-  it('should delete a todo', async () => {
-    const createdTodo = await createTodo('Todo to delete');
-    const newTodoId = createdTodo.id;
+describe('DELETE /lists/:listId/todos/:todoId', () => {
+  it('should delete a todo from the list', async () => {
+    const list = await addListHandler()
+    const todo = await createTodo(list.id, 'Todo to delete')
 
-    const deleteResponse = await api.delete(`/todos/${newTodoId}`);
-    expect(deleteResponse.statusCode).toBe(204);
+    const deleteResponse = await api.delete(`/lists/${list.id}/todos/${todo.id}`)
+    expect(deleteResponse.statusCode).toBe(204)
 
-    const todos = (await api.get('/todos')).body;
-    expect(todos).toEqual([]);
-  });
+    const todosResponse = await api.get(`/lists/${list.id}/todos`)
+    expect(todosResponse.body).toEqual([])
+  })
 
   it('should return 404 if todo not found', async () => {
-    const response = await api.delete('/todos/999');
-    expect(response.statusCode).toBe(404);
-  });
+    const list = await addListHandler()
+    const response = await api.delete(`/lists/${list.id}/todos/999`)
+    expect(response.statusCode).toBe(404)
+  })
 
-  it('should return 400 if id is not a number', async () => {
-    const response = await api.delete('/todos/abc');
-    expect(response.statusCode).toBe(400);
-  });
-});
+  it('should return 400 if invalid IDs', async () => {
+    const response = await api.delete('/lists/abc/todos/xyz')
+    expect(response.statusCode).toBe(400)
+  })
+})
 
-describe('PUT /todos/:id', () => {
-  it('should update a todo', async () => {
-    const createdTodo = await createTodo('Todo to update');
-    const newTodoId = createdTodo.id;
+describe('PUT /lists/:listId/todos/:todoId', () => {
+  it('should update a todo in the list', async () => {
+    const list = await addListHandler()
+    const todo = await createTodo(list.id, 'Todo to update')
 
     const updateResponse = await api
-      .put(`/todos/${newTodoId}`)
-      .send({ text: 'Updated Todo', completed: true });
+      .put(`/lists/${list.id}/todos/${todo.id}`)
+      .send({ text: 'Updated Todo', completed: true })
 
-    expect(updateResponse.statusCode).toBe(200);
+    expect(updateResponse.statusCode).toBe(200)
     expect(updateResponse.body).toEqual({
-      id: newTodoId,
+      id: todo.id,
       text: 'Updated Todo',
       completed: true,
-    });
-  });
+    })
+  })
 
   it('should return 404 if todo not found', async () => {
-    const response = await api.put('/todos/999').send({ text: 'Updated' });
-    expect(response.statusCode).toBe(404);
-  });
+    const list = await addListHandler()
+    const response = await api.put(`/lists/${list.id}/todos/999`).send({ text: 'Updated' })
+    expect(response.statusCode).toBe(404)
+  })
 
-  it('should return 400 if id is not a number', async () => {
-    const response = await api.put('/todos/abc').send({ text: 'Updated' });
-    expect(response.statusCode).toBe(400);
-  });
-});
+  it('should return 400 if invalid IDs', async () => {
+    const response = await api.put('/lists/abc/todos/xyz').send({ text: 'Updated' })
+    expect(response.statusCode).toBe(400)
+  })
+})

@@ -1,54 +1,63 @@
-import { getTodosModel, addTodoModel, deleteTodoModel } from '../models/todoModel.js'
+import { getTodos, addTodo, deleteTodo, updateTodo, getLists } from '../models/listsModel.js'
 
-export const listTodos = (req, res) => {
-  const todos = getTodosModel()
-  res.json(todos)
+export const getTodosHandler = (req, res) => {
+  const listId = Number(req.params.listId)
+  if (Number.isNaN(listId)) return res.status(400).json({ error: 'Invalid listId' })
+
+  const lists = getLists()
+  if (!lists.some((l) => l.id === listId)) {
+    return res.status(404).json({ error: 'List not found' })
+  }
+
+  return res.json(getTodos(listId))
 }
 
-export const addTodo = (req, res) => {
+export const addTodoHandler = (req, res) => {
+  const listId = Number(req.params.listId)
   const { text } = req.body
-  if (!text) {
+
+  if (Number.isNaN(listId)) return res.status(400).json({ error: 'Invalid listId' })
+  if (typeof text !== 'string' || !text.trim())
     return res.status(400).json({ error: 'Text is required' })
+
+  const lists = getLists()
+  if (!lists.some((l) => l.id === listId)) {
+    return res.status(404).json({ error: 'List not found' })
   }
-  const newTodo = addTodoModel(text)
-  res.status(201).json(newTodo)
+
+  const newTodo = addTodo(listId, text)
+  return res.status(201).json(newTodo)
 }
 
-export const deleteTodo = (req, res) => {
-  const id = Number(req.params.id)
-  if (isNaN(id)) {
-    return res.status(400).json({ error: 'Invalid id' })
+export const deleteTodoHandler = (req, res) => {
+  const listId = Number(req.params.listId)
+  const todoId = Number(req.params.todoId)
+
+  if (Number.isNaN(listId) || Number.isNaN(todoId))
+    return res.status(400).json({ error: 'Invalid ID' })
+
+  const lists = getLists()
+  if (!lists.some((l) => l.id === listId)) {
+    return res.status(404).json({ error: 'List not found' })
   }
-  const todo = getTodosModel().find((t) => t.id === parseInt(id))
-  if (!todo) {
-    return res.status(404).json({ error: 'Todo not found' })
-  }
-  deleteTodoModel(parseInt(id))
-  res.status(204).send()
+
+  const deleted = deleteTodo(listId, todoId)
+  return deleted ? res.status(204).send() : res.status(404).json({ error: 'Todo not found' })
 }
 
-export const updateTodo = (req, res) => {
-  const id = Number(req.params.id)
-  if (isNaN(id)) {
-    return res.status(400).json({ error: 'Invalid id' })
+export const updateTodoHandler = (req, res) => {
+  const listId = Number(req.params.listId)
+  const todoId = Number(req.params.todoId)
+  const updates = req.body
+
+  if (Number.isNaN(listId) || Number.isNaN(todoId))
+    return res.status(400).json({ error: 'Invalid ID' })
+
+  const lists = getLists()
+  if (!lists.some((l) => l.id === listId)) {
+    return res.status(404).json({ error: 'List not found' })
   }
 
-  const todos = getTodosModel()
-  const todo = todos.find((t) => t.id === id)
-
-  if (!todo) {
-    return res.status(404).json({ error: 'Todo not found' })
-  }
-
-  const { text, completed } = req.body
-
-  if (typeof text === 'string') {
-    todo.text = text
-  }
-
-  if (typeof completed === 'boolean') {
-    todo.completed = completed
-  }
-
-  return res.status(200).json(todo)
+  const updated = updateTodo(listId, todoId, updates)
+  return updated ? res.json(updated) : res.status(404).json({ error: 'Todo not found' })
 }

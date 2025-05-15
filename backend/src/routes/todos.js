@@ -1,11 +1,16 @@
 import express from 'express'
-import { listTodos, addTodo, deleteTodo, updateTodo } from '../controllers/todosController.js'
+import {
+  getTodosHandler,
+  addTodoHandler,
+  deleteTodoHandler,
+  updateTodoHandler,
+} from '../controllers/todosController.js'
 
-const router = express.Router()
+const router = express.Router({ mergeParams: true })
 
-router.get('/', listTodos)
-router.post('/', addTodo)
-router.delete('/:id', deleteTodo)
-router.put('/:id', updateTodo)
+router.get('/', getTodosHandler)
+router.post('/', addTodoHandler)
+router.put('/:todoId', updateTodoHandler)
+router.delete('/:todoId', deleteTodoHandler)
 
 export default router
