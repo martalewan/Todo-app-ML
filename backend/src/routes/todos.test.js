@@ -5,12 +5,12 @@ const api = request(app)
 
 const addListHandler = async (title = 'Test List') => {
   const response = await api.post('/lists').send({ title })
-  return response.body
+  return response.body.data
 }
 
 const createTodo = async (listId, text) => {
   const response = await api.post(`/lists/${listId}/todos`).send({ text })
-  return response.body
+  return response.body.data
 }
 
 describe('GET /lists/:listId/todos', () => {
@@ -20,7 +20,7 @@ describe('GET /lists/:listId/todos', () => {
 
     const response = await api.get(`/lists/${list.id}/todos`)
     expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual([{ id: 1, text: 'Todo 1', completed: false }])
+    expect(response.body.data).toEqual([{ id: 1, text: 'Todo 1', completed: false }])
   })
 
   it('should return 404 for non-existing list', async () => {
@@ -36,7 +36,7 @@ describe('POST /lists/:listId/todos', () => {
     const response = await api.post(`/lists/${list.id}/todos`).send(newTodo)
 
     expect(response.statusCode).toBe(201)
-    expect(response.body).toEqual({
+    expect(response.body.data).toEqual({
       id: 1,
       text: 'New Todo',
       completed: false,
@@ -64,7 +64,7 @@ describe('DELETE /lists/:listId/todos/:todoId', () => {
     expect(deleteResponse.statusCode).toBe(204)
 
     const todosResponse = await api.get(`/lists/${list.id}/todos`)
-    expect(todosResponse.body).toEqual([])
+    expect(todosResponse.body.data).toEqual([])
   })
 
   it('should return 404 if todo not found', async () => {
@@ -89,7 +89,7 @@ describe('PUT /lists/:listId/todos/:todoId', () => {
       .send({ text: 'Updated Todo', completed: true })
 
     expect(updateResponse.statusCode).toBe(200)
-    expect(updateResponse.body).toEqual({
+    expect(updateResponse.body.data).toEqual({
       id: todo.id,
       text: 'Updated Todo',
       completed: true,

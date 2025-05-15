@@ -2,17 +2,27 @@ import { getLists, addList, updateList, deleteList } from '../models/listsModel.
 
 export const getListsHandler = (req, res) => {
   const lists = getLists()
-
-  res.json(lists)
+  res.status(200).json({
+    success: true,
+    message: 'Lists retrieved successfully',
+    data: lists,
+  })
 }
 
 export const addListHandler = (req, res) => {
   const { title } = req.body
   if (typeof title !== 'string' || !title.trim()) {
-    return res.status(400).json({ error: 'Title is required' })
+    return res.status(400).json({
+      success: false,
+      message: 'Title is required',
+    })
   }
   const newList = addList(title)
-  res.status(201).json(newList)
+  res.status(201).json({
+    success: true,
+    message: 'List created successfully',
+    data: newList,
+  })
 }
 
 export const updateListHandler = (req, res) => {
@@ -20,28 +30,46 @@ export const updateListHandler = (req, res) => {
   const { title } = req.body
 
   if (Number.isNaN(listId)) {
-    return res.status(400).json({ error: 'Invalid list ID' })
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid list ID',
+    })
   }
 
   const updated = updateList(listId, { title })
   if (!updated) {
-    return res.status(404).json({ error: 'List not found' })
+    return res.status(404).json({
+      success: false,
+      message: 'List not found',
+    })
   }
 
-  res.json(updated)
+  res.status(200).json({
+    success: true,
+    message: 'List updated successfully',
+    data: updated,
+  })
 }
 
 export const deleteListHandler = (req, res) => {
   const listId = Number(req.params.listId)
 
   if (Number.isNaN(listId)) {
-    return res.status(400).json({ error: 'Invalid list ID' })
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid list ID',
+    })
   }
 
   const deleted = deleteList(listId)
   if (!deleted) {
-    return res.status(404).json({ error: 'List not found' })
+    return res.status(404).json({
+      success: false,
+      message: 'List not found',
+    })
   }
-
-  res.status(204).send()
+  res.status(200).json({
+    success: true,
+    message: 'List deleted successfully',
+  })
 }
