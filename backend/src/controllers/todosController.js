@@ -55,7 +55,7 @@ export const addTodoHandler = (req, res) => {
     })
   }
 
-  const newTodo = addTodo(listId, { text: value.text })
+  const newTodo = addTodo(listId, value.text)
   return res.status(201).json({
     success: true,
     message: 'Todo created successfully',
