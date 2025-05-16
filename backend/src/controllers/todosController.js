@@ -1,4 +1,10 @@
 import { getTodos, addTodo, deleteTodo, updateTodo, getLists } from '../models/listsModel.js'
+import Joi from 'joi'
+
+const todoSchema = Joi.object({
+  text: Joi.string().min(1).required(),
+  completed: Joi.boolean(),
+})
 
 export const getTodosHandler = (req, res) => {
   const listId = Number(req.params.listId)
@@ -25,7 +31,7 @@ export const getTodosHandler = (req, res) => {
 
 export const addTodoHandler = (req, res) => {
   const listId = Number(req.params.listId)
-  const { text } = req.body
+  const { error, value } = todoSchema.validate(req.body)
 
   if (Number.isNaN(listId)) {
     return res.status(400).json({
@@ -34,10 +40,10 @@ export const addTodoHandler = (req, res) => {
     })
   }
 
-  if (typeof text !== 'string' || !text.trim()) {
+  if (error) {
     return res.status(400).json({
       success: false,
-      message: 'Text is required',
+      message: error.details[0].message,
     })
   }
 
@@ -49,11 +55,52 @@ export const addTodoHandler = (req, res) => {
     })
   }
 
-  const newTodo = addTodo(listId, text)
+  const newTodo = addTodo(listId, { text: value.text })
   return res.status(201).json({
     success: true,
     message: 'Todo created successfully',
     data: newTodo,
+  })
+}
+
+export const updateTodoHandler = (req, res) => {
+  const listId = Number(req.params.listId)
+  const todoId = Number(req.params.todoId)
+  const updates = req.body
+
+  if (Number.isNaN(listId) || Number.isNaN(todoId)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid ID(s)',
+    })
+  }
+
+  const lists = getLists()
+  if (!lists.some((l) => l.id === listId)) {
+    return res.status(404).json({
+      success: false,
+      message: 'List not found',
+    })
+  }
+  const { error, value } = todoSchema.validate(updates)
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message,
+    })
+  }
+  const updated = updateTodo(listId, todoId, value)
+
+  if (!updated) {
+    return res.status(404).json({
+      success: false,
+      message: 'Todo not found',
+    })
+  }
+  return res.status(200).json({
+    success: true,
+    message: 'Todo updated successfully',
+    data: updated,
   })
 }
 
@@ -84,38 +131,4 @@ export const deleteTodoHandler = (req, res) => {
     })
   }
   return res.status(204).send()
-}
-
-export const updateTodoHandler = (req, res) => {
-  const listId = Number(req.params.listId)
-  const todoId = Number(req.params.todoId)
-  const updates = req.body
-
-  if (Number.isNaN(listId) || Number.isNaN(todoId)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid ID(s)',
-    })
-  }
-
-  const lists = getLists()
-  if (!lists.some((l) => l.id === listId)) {
-    return res.status(404).json({
-      success: false,
-      message: 'List not found',
-    })
-  }
-
-  const updated = updateTodo(listId, todoId, updates)
-  if (!updated) {
-    return res.status(404).json({
-      success: false,
-      message: 'Todo not found',
-    })
-  }
-  return res.status(200).json({
-    success: true,
-    message: 'Todo updated successfully',
-    data: updated,
-  })
 }

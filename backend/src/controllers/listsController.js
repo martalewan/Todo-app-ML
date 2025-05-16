@@ -1,6 +1,11 @@
 import { getLists, addList, updateList, deleteList } from '../models/listsModel.js'
+import Joi from 'joi'
 
-export const getListsHandler = (req, res) => {
+const listSchema = Joi.object({
+  title: Joi.string().min(1).required(),
+})
+
+export const getListsHandler = (_, res) => {
   const lists = getLists()
   res.status(200).json({
     success: true,
@@ -10,14 +15,16 @@ export const getListsHandler = (req, res) => {
 }
 
 export const addListHandler = (req, res) => {
-  const { title } = req.body
-  if (typeof title !== 'string' || !title.trim()) {
+  const { error, value } = listSchema.validate(req.body)
+
+  if (error) {
     return res.status(400).json({
       success: false,
-      message: 'Title is required',
+      message: error.details[0].message,
     })
   }
-  const newList = addList(title)
+
+  const newList = addList(value.title)
   res.status(201).json({
     success: true,
     message: 'List created successfully',
@@ -27,7 +34,6 @@ export const addListHandler = (req, res) => {
 
 export const updateListHandler = (req, res) => {
   const listId = Number(req.params.listId)
-  const { title } = req.body
 
   if (Number.isNaN(listId)) {
     return res.status(400).json({
@@ -35,8 +41,15 @@ export const updateListHandler = (req, res) => {
       message: 'Invalid list ID',
     })
   }
+  const { error, value } = listSchema.validate(req.body)
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message,
+    })
+  }
 
-  const updated = updateList(listId, { title })
+  const updated = updateList(listId, { title: value.title })
   if (!updated) {
     return res.status(404).json({
       success: false,
