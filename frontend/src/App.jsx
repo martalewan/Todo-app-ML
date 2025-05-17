@@ -1,6 +1,6 @@
 import React from 'react'
 import { AppBar, Toolbar, Typography } from '@mui/material'
-import { TodoLists } from './todos/components/TodoLists'
+import { Dashboard } from './components/Dashboard'
 
 const MainAppBar = () => {
   return (
@@ -36,7 +36,7 @@ const MainWrapper = ({ children }) => {
 const App = () => {
   return (
     <MainWrapper>
-      <TodoLists style={{ margin: '1rem' }} />
+      <Dashboard style={{ margin: '1rem' }} />
     </MainWrapper>
   )
 }
