@@ -1,4 +1,21 @@
-let lists = []
+let lists = [
+  {
+    id: 2,
+    title: 'Work Tasks',
+  },
+  {
+    id: 3,
+    title: 'Personal Projects',
+  },
+  {
+    id: 4,
+    title: 'Chores',
+  },
+  {
+    id: 5,
+    title: 'Books to Read',
+  },
+]
 const todosByListId = new Map()
 
 /**
@@ -61,9 +78,12 @@ export const getTodos = (listId) => {
  * @returns {Todo | null}
  */
 export const addTodo = (listId, text) => {
-  const todos = todosByListId.get(listId)
-  if (!todos) return null
+  let todos = todosByListId.get(listId)
 
+  if (!todos) {
+    todos = []
+    todosByListId.set(listId, todos)
+  }
   const newTodo = {
     id: todos.length ? Math.max(...todos.map((t) => t.id)) + 1 : 1,
     text: text.trim(),
