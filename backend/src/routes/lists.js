@@ -1,16 +1,11 @@
 import express from 'express'
-import {
-  getListsHandler,
-  addListHandler,
-  updateListHandler,
-  deleteListHandler,
-} from '../controllers/listsController.js'
+import { getLists, createList, updateList, deleteList } from '../handlers/listsHandlers.js'
 
 const router = express.Router()
 
-router.get('/', getListsHandler)
-router.post('/', addListHandler)
-router.put('/:listId', updateListHandler)
-router.delete('/:listId', deleteListHandler)
+router.get('/', getLists)
+router.post('/', createList)
+router.put('/:listId', updateList)
+router.delete('/:listId', deleteList)
 
 export default router

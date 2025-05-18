@@ -29,7 +29,7 @@ export const getLists = () => {
  * @param {string} title
  * @returns {List}
  */
-export const addList = (title) => {
+export const createList = (title) => {
   const newList = {
     id: lists.length ? Math.max(...lists.map((l) => l.id)) + 1 : 1,
     title: title.trim(),
@@ -77,7 +77,7 @@ export const getTodos = (listId) => {
  * @param {string} text
  * @returns {Todo | null}
  */
-export const addTodo = (listId, text) => {
+export const createTodo = (listId, text) => {
   let todos = todosByListId.get(listId)
 
   if (!todos) {
@@ -128,7 +128,7 @@ export const deleteTodo = (listId, todoId) => {
   return true
 }
 
-export const resetData = () => {
+export const clearData = () => {
   lists = []
   todosByListId.clear()
 }

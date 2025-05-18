@@ -3,7 +3,7 @@ import app from '../app.js'
 
 const api = request(app)
 
-const addListHandler = async (title = 'Test List') => {
+const createList = async (title = 'Test List') => {
   const response = await api.post('/lists').send({ title })
   return response.body.data
 }
@@ -15,7 +15,7 @@ const createTodo = async (listId, text) => {
 
 describe('GET /lists/:listId/todos', () => {
   it('should return a list of todos in the list', async () => {
-    const list = await addListHandler()
+    const list = await createList()
     await createTodo(list.id, 'Todo 1')
 
     const response = await api.get(`/lists/${list.id}/todos`)
@@ -31,7 +31,7 @@ describe('GET /lists/:listId/todos', () => {
 
 describe('POST /lists/:listId/todos', () => {
   it('should add a new todo to the list', async () => {
-    const list = await addListHandler()
+    const list = await createList()
     const newTodo = { text: 'New Todo' }
     const response = await api.post(`/lists/${list.id}/todos`).send(newTodo)
 
@@ -44,7 +44,7 @@ describe('POST /lists/:listId/todos', () => {
   })
 
   it('should return 400 if no text is provided', async () => {
-    const list = await addListHandler()
+    const list = await createList()
     const response = await api.post(`/lists/${list.id}/todos`).send({})
     expect(response.statusCode).toBe(400)
   })
@@ -57,7 +57,7 @@ describe('POST /lists/:listId/todos', () => {
 
 describe('DELETE /lists/:listId/todos/:todoId', () => {
   it('should delete a todo from the list', async () => {
-    const list = await addListHandler()
+    const list = await createList()
     const todo = await createTodo(list.id, 'Todo to delete')
 
     const deleteResponse = await api.delete(`/lists/${list.id}/todos/${todo.id}`)
@@ -68,7 +68,7 @@ describe('DELETE /lists/:listId/todos/:todoId', () => {
   })
 
   it('should return 404 if todo not found', async () => {
-    const list = await addListHandler()
+    const list = await createList()
     const response = await api.delete(`/lists/${list.id}/todos/999`)
     expect(response.statusCode).toBe(404)
   })
@@ -81,7 +81,7 @@ describe('DELETE /lists/:listId/todos/:todoId', () => {
 
 describe('PUT /lists/:listId/todos/:todoId', () => {
   it('should update a todo in the list', async () => {
-    const list = await addListHandler()
+    const list = await createList()
     const todo = await createTodo(list.id, 'Todo to update')
 
     const updateResponse = await api
@@ -97,7 +97,7 @@ describe('PUT /lists/:listId/todos/:todoId', () => {
   })
 
   it('should return 404 if todo not found', async () => {
-    const list = await addListHandler()
+    const list = await createList()
     const response = await api.put(`/lists/${list.id}/todos/999`).send({ text: 'Updated' })
     expect(response.statusCode).toBe(404)
   })
