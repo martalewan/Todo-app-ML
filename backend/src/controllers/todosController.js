@@ -1,9 +1,13 @@
 import { getTodos, addTodo, deleteTodo, updateTodo, getLists } from '../models/listsModel.js'
 import Joi from 'joi'
 
-const todoSchema = Joi.object({
+const createTodoSchema = Joi.object({
   text: Joi.string().min(1).required(),
-  completed: Joi.boolean(),
+})
+
+const updateTodoSchema = Joi.object({
+  text: Joi.string().min(1).optional(),
+  completed: Joi.boolean().optional(),
 })
 
 export const getTodosHandler = (req, res) => {
@@ -31,7 +35,7 @@ export const getTodosHandler = (req, res) => {
 
 export const addTodoHandler = (req, res) => {
   const listId = Number(req.params.listId)
-  const { error, value } = todoSchema.validate(req.body)
+  const { error, value } = createTodoSchema.validate(req.body)
 
   if (Number.isNaN(listId)) {
     return res.status(400).json({
@@ -67,7 +71,6 @@ export const updateTodoHandler = (req, res) => {
   const listId = Number(req.params.listId)
   const todoId = Number(req.params.todoId)
   const updates = req.body
-
   if (Number.isNaN(listId) || Number.isNaN(todoId)) {
     return res.status(400).json({
       success: false,
@@ -82,7 +85,9 @@ export const updateTodoHandler = (req, res) => {
       message: 'List not found',
     })
   }
-  const { error, value } = todoSchema.validate(updates)
+  const { error, value } = updateTodoSchema.validate(updates)
+  console.log('backend BEFORE: values:', value)
+
   if (error) {
     return res.status(400).json({
       success: false,
@@ -90,6 +95,7 @@ export const updateTodoHandler = (req, res) => {
     })
   }
   const updated = updateTodo(listId, todoId, value)
+  console.log('backend after: updated:', updated)
 
   if (!updated) {
     return res.status(404).json({
