@@ -88,11 +88,16 @@ export const TodosCard = ({ activeList }) => {
                   {index + 1}
                 </Typography>
                 <TextField
+                  size='small'
                   sx={{ flexGrow: 1, marginTop: '1rem' }}
                   label='What to do?'
                   defaultValue={todo.text}
                   onBlur={(e) => handleUpdateTodo(todo.id, { text: e.target.value })}
                   onKeyDown={(e) => handleKeyDown(e, todo)}
+                  disabled={todo.completed}
+                  InputProps={{
+                    style: todo.completed ? { textDecoration: 'line-through', color: '#888' } : {},
+                  }}
                 />
                 <Button
                   sx={{ margin: '8px' }}
@@ -114,6 +119,7 @@ export const TodosCard = ({ activeList }) => {
           <CardActions>
             {newTodo !== null ? (
               <TextField
+                size='small'
                 sx={{ flexGrow: 1, marginTop: '1rem' }}
                 label='What to do?'
                 value={newTodo}

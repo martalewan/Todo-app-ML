@@ -47,6 +47,7 @@ const ListsCard = ({ style, lists, setLists, setActiveList }) => {
         <CardActions>
           {newListName !== null ? (
             <TextField
+              size='small'
               sx={{ flexGrow: 1, marginTop: '1rem' }}
               label='New list name?'
               value={newListName}
