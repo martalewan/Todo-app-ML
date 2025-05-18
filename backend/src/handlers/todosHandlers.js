@@ -1,26 +1,7 @@
 import * as listService from '../services/listsService.js'
-import Joi from 'joi'
-import { listIdSchema } from './listsHandlers.js'
-
-const todoIdSchema = Joi.string().uuid().required()
-
-const createTodoSchema = Joi.object({
-  text: Joi.string().min(1).required(),
-})
-const updateTodoSchema = Joi.object({
-  text: Joi.string().min(1).optional(),
-  completed: Joi.boolean().optional(),
-})
 
 export const getTodos = (req, res) => {
-  const { error: listIdError, value: listId } = listIdSchema.validate(req.params.listId)
-
-  if (listIdError) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid list ID',
-    })
-  }
+  const listId = req.params.listId
 
   const lists = listService.getLists()
   if (!lists.some((l) => l.id === listId)) {
@@ -39,22 +20,8 @@ export const getTodos = (req, res) => {
 }
 
 export const createTodo = (req, res) => {
-  const { error: listIdError, value: listId } = listIdSchema.validate(req.params.listId)
-
-  if (listIdError) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid list ID',
-    })
-  }
-
-  const { error, value } = createTodoSchema.validate(req.body)
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.details[0].message,
-    })
-  }
+  const listId = req.params.listId
+  const text = req.body.text
 
   const lists = listService.getLists()
   if (!lists.some((l) => l.id === listId)) {
@@ -64,7 +31,7 @@ export const createTodo = (req, res) => {
     })
   }
 
-  const newTodo = listService.createTodo(listId, value.text)
+  const newTodo = listService.createTodo(listId, text)
   return res.status(201).json({
     success: true,
     message: 'Todo created successfully',
@@ -73,22 +40,10 @@ export const createTodo = (req, res) => {
 }
 
 export const updateTodo = (req, res) => {
-  const { error: todoIdError, value: todoId } = todoIdSchema.validate(req.params.todoId)
-  if (todoIdError) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid todo ID',
-    })
-  }
-  const { error, value } = updateTodoSchema.validate(req.body)
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.details[0].message,
-    })
-  }
+  const todoId = req.params.todoId
+  const update = req.body
 
-  const updated = listService.updateTodo(todoId, value)
+  const updated = listService.updateTodo(todoId, update)
   if (!updated) {
     return res.status(404).json({
       success: false,
@@ -103,13 +58,7 @@ export const updateTodo = (req, res) => {
 }
 
 export const deleteTodo = (req, res) => {
-  const { error: todoIdError, value: todoId } = todoIdSchema.validate(req.params.todoId)
-  if (todoIdError) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid todo ID',
-    })
-  }
+  const todoId = req.params.todoId
 
   const deleted = listService.deleteTodo(todoId)
   if (!deleted) {

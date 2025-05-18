@@ -12,14 +12,14 @@ beforeEach(() => {
   clearData()
 })
 
-test('addList creates a new list', () => {
+test('should create a new list', () => {
   const list = createList('Buy sunglasses')
   expect(list).toMatchObject({ title: 'Buy sunglasses' })
   expect(list.id).toEqual(expect.any(String)) // UUID
   expect(getLists()).toHaveLength(1)
 })
 
-test('addTodo adds a todo', () => {
+test('should create a todo', () => {
   const list = createList('Temp List')
   const todo = createTodo(list.id, 'Sell shoes')
 
@@ -32,7 +32,7 @@ test('addTodo adds a todo', () => {
   expect(getTodos(list.id)).toHaveLength(1)
 })
 
-test('updateTodo updates an existing todo', () => {
+test('should update an existing todo', () => {
   const list = createList('Work Tasks')
   const todo = createTodo(list.id, 'Run 5km')
 
@@ -49,7 +49,7 @@ test('updateTodo updates an existing todo', () => {
   })
 })
 
-test('deleteTodo removes a todo from list', () => {
+test('should delete a todo', () => {
   const list = createList('Work')
   const todo = createTodo(list.id, 'Finish docs')
 
@@ -59,14 +59,14 @@ test('deleteTodo removes a todo from list', () => {
   expect(getTodos(list.id)).toHaveLength(0)
 })
 
-test('updateTodo returns null if todo not found', () => {
+test('should return null if todo not found', () => {
   const result = updateTodo('00000000-0000-0000-0000-000000000000', {
     text: 'Not existing text',
   })
   expect(result).toBeNull()
 })
 
-test('deleteTodo returns false if todo not found', () => {
+test('should return false if todo not found', () => {
   const result = deleteTodo('00000000-0000-0000-0000-000000000000')
   expect(result).toBe(false)
 })

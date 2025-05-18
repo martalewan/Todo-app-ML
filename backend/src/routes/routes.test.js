@@ -34,6 +34,15 @@ describe('GET /lists/:listId/todos', () => {
     const response = await api.get('/lists/00000000-0000-0000-0000-000000000000/todos')
     expect(response.statusCode).toBe(404)
   })
+
+  it('should fail validation if listId is not an UUID', async () => {
+    const response = await api.get('/lists/notAnUUID/todos')
+    expect(response.statusCode).toBe(400)
+    expect(response.body).toStrictEqual({
+      message: 'ValidationError: "listId" must be a valid GUID',
+      type: 'params',
+    })
+  })
 })
 
 describe('POST /lists/:listId/todos', () => {

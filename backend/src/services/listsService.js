@@ -2,20 +2,16 @@ import { v4 as uuidv4 } from 'uuid'
 
 const initialState = [
   {
-    id: 2,
+    id: uuidv4(),
     title: 'Work Tasks',
   },
   {
-    id: 3,
+    id: uuidv4(),
     title: 'Personal Projects',
   },
   {
-    id: 4,
+    id: uuidv4(),
     title: 'Chores',
-  },
-  {
-    id: 5,
-    title: 'Books to Read',
   },
 ]
 const db = {
