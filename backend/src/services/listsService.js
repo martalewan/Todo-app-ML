@@ -18,17 +18,10 @@ let lists = [
 ]
 const todosByListId = new Map()
 
-/**
- * @returns {List[]}
- */
 export const getLists = () => {
   return lists
 }
 
-/**
- * @param {string} title
- * @returns {List}
- */
 export const createList = (title) => {
   const newList = {
     id: lists.length ? Math.max(...lists.map((l) => l.id)) + 1 : 1,
@@ -39,11 +32,6 @@ export const createList = (title) => {
   return newList
 }
 
-/**
- * @param {number} id
- * @param {{ title?: string }} updates
- * @returns {List | null}
- */
 export const updateList = (id, updates) => {
   const list = lists.find((l) => l.id === id)
   if (!list) return null
@@ -53,10 +41,6 @@ export const updateList = (id, updates) => {
   return list
 }
 
-/**
- * @param {number} id
- * @returns {boolean}
- */
 export const deleteList = (id) => {
   const initialLength = lists.length
   lists = lists.filter((l) => l.id !== id)
@@ -64,19 +48,10 @@ export const deleteList = (id) => {
   return lists.length !== initialLength
 }
 
-/**
- * @param {number} listId
- * @returns {Todo[]}
- */
 export const getTodos = (listId) => {
   return todosByListId.get(listId) || []
 }
 
-/**
- * @param {number} listId
- * @param {string} text
- * @returns {Todo | null}
- */
 export const createTodo = (listId, text) => {
   let todos = todosByListId.get(listId)
 
@@ -93,12 +68,6 @@ export const createTodo = (listId, text) => {
   return newTodo
 }
 
-/**
- * @param {number} listId
- * @param {number} todoId
- * @param {{ text?: string, completed?: boolean }} updates
- * @returns {Todo | null}
- */
 export const updateTodo = (listId, todoId, updates) => {
   const todos = todosByListId.get(listId)
   if (!todos) return null
@@ -111,11 +80,6 @@ export const updateTodo = (listId, todoId, updates) => {
   return todo
 }
 
-/**
- * @param {number} listId
- * @param {number} todoId
- * @returns {boolean}
- */
 export const deleteTodo = (listId, todoId) => {
   const todos = todosByListId.get(listId)
   if (!todos) return false

@@ -8,10 +8,11 @@ import {
 import Joi from 'joi'
 import { listIdSchema } from './listsHandlers.js'
 
+const todoIdSchema = Joi.number().integer().required()
+
 const createTodoSchema = Joi.object({
   text: Joi.string().min(1).required(),
 })
-
 const updateTodoSchema = Joi.object({
   text: Joi.string().min(1).optional(),
   completed: Joi.boolean().optional(),
@@ -20,8 +21,6 @@ const updateTodoParamsSchema = Joi.object({
   listId: listIdSchema,
   todoId: todoIdSchema,
 })
-
-export const todoIdSchema = Joi.number().integer().required()
 
 export const getTodos = (req, res) => {
   const { error: listIdError, value: listId } = listIdSchema.validate(req.params.listId)
@@ -123,9 +122,8 @@ export const updateTodo = (req, res) => {
 }
 
 export const deleteTodo = (req, res) => {
-  const { error: listIdError, value: listId } = listIdSchema.validate(req.params.listId)
-  const { error: todoIdError, value: todoId } = todoIdSchema.validate(req.params.listId)
-  if (listIdError || todoIdError) {
+  const { error: paramError, value: paramValues } = updateTodoParamsSchema.validate(req.params)
+  if (paramError) {
     return res.status(400).json({
       success: false,
       message: 'Invalid ID(s)',
@@ -133,14 +131,14 @@ export const deleteTodo = (req, res) => {
   }
 
   const lists = getListsService()
-  if (!lists.some((l) => l.id === listId)) {
+  if (!lists.some((l) => l.id === paramValues.listId)) {
     return res.status(404).json({
       success: false,
       message: 'List not found',
     })
   }
 
-  const deleted = deleteTodoService(listId, todoId)
+  const deleted = deleteTodoService(paramValues.listId, paramValues.todoId)
   if (!deleted) {
     return res.status(404).json({
       success: false,
