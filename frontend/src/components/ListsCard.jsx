@@ -43,45 +43,46 @@ const ListsCard = ({ style, lists, setLists, setActiveList }) => {
             </ListItemButton>
           ))}
         </List>
-      </CardContent>
 
-      <CardActions>
-        {newListName !== null ? (
-          <TextField
-            sx={{ flexGrow: 1, marginTop: '1rem' }}
-            label='New list name?'
-            value={newListName}
-            onChange={(e) => setNewListName(e.target.value)}
-            onBlur={() => {
-              if (!newListName) {
-                setNewListName(null)
-              }
-            }}
-          />
-        ) : (
+        <CardActions>
+          {newListName !== null ? (
+            <TextField
+              sx={{ flexGrow: 1, marginTop: '1rem' }}
+              label='New list name?'
+              value={newListName}
+              onChange={(e) => setNewListName(e.target.value)}
+              fullWidth
+              onBlur={() => {
+                if (!newListName) {
+                  setNewListName(null)
+                }
+              }}
+            />
+          ) : (
+            <Button
+              type='button'
+              color='primary'
+              onClick={() => {
+                setNewListName('')
+              }}
+            >
+              Add List <AddIcon />
+            </Button>
+          )}
+
           <Button
-            type='button'
+            variant='contained'
             color='primary'
             onClick={() => {
+              handleCreateList(newListName)
               setNewListName('')
             }}
+            disabled={!newListName}
           >
-            Add List <AddIcon />
+            Add
           </Button>
-        )}
-
-        <Button
-          variant='contained'
-          color='primary'
-          onClick={() => {
-            handleCreateList(newListName)
-            setNewListName('')
-          }}
-          disabled={!newListName}
-        >
-          Add
-        </Button>
-      </CardActions>
+        </CardActions>
+      </CardContent>
     </Card>
   )
 }

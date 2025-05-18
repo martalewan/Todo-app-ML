@@ -86,7 +86,6 @@ export const updateTodoHandler = (req, res) => {
     })
   }
   const { error, value } = updateTodoSchema.validate(updates)
-  console.log('backend BEFORE: values:', value)
 
   if (error) {
     return res.status(400).json({
@@ -95,8 +94,6 @@ export const updateTodoHandler = (req, res) => {
     })
   }
   const updated = updateTodo(listId, todoId, value)
-  console.log('backend after: updated:', updated)
-
   if (!updated) {
     return res.status(404).json({
       success: false,

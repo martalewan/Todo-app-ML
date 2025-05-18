@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react'
-import { TextField, Card, CardContent, CardActions, Button, Typography, Box } from '@mui/material'
+import {
+  TextField,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Typography,
+  Box,
+  Checkbox,
+} from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
 import { fetchTodos, addTodo, deleteTodo, updateTodo } from '../api/todos'
@@ -46,12 +55,10 @@ export const TodosCard = ({ activeList }) => {
     }
   }
 
-  const handleUpdateTodo = async (todoId, newText) => {
+  const handleUpdateTodo = async (todoId, updates) => {
     try {
-      await updateTodo(activeList.id, todoId, { text: newText })
-      setTodos((prev) =>
-        prev.map((todo) => (todo.id === todoId ? { ...todo, text: newText } : todo)),
-      )
+      await updateTodo(activeList.id, todoId, updates)
+      setTodos((prev) => prev.map((todo) => (todo.id === todoId ? { ...todo, ...updates } : todo)))
     } catch (error) {
       console.error('Error updating todo:', error)
     }
@@ -60,7 +67,7 @@ export const TodosCard = ({ activeList }) => {
   const handleKeyDown = (e, todo) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      handleUpdateTodo(todo.id, e.target.value)
+      handleUpdateTodo(todo.id, { text: e.target.value })
       e.target.blur()
     }
   }
@@ -84,7 +91,7 @@ export const TodosCard = ({ activeList }) => {
                   sx={{ flexGrow: 1, marginTop: '1rem' }}
                   label='What to do?'
                   defaultValue={todo.text}
-                  onBlur={(e) => handleUpdateTodo(todo.id, e.target.value)}
+                  onBlur={(e) => handleUpdateTodo(todo.id, { text: e.target.value })}
                   onKeyDown={(e) => handleKeyDown(e, todo)}
                 />
                 <Button
@@ -97,6 +104,10 @@ export const TodosCard = ({ activeList }) => {
                 >
                   <DeleteIcon />
                 </Button>
+                <Checkbox
+                  checked={todo.completed}
+                  onChange={() => handleUpdateTodo(todo.id, { completed: !todo.completed })}
+                />
               </Box>
             ))}
 
