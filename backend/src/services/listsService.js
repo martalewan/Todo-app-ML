@@ -1,4 +1,6 @@
-let lists = [
+import { v4 as uuidv4 } from 'uuid'
+
+const initialState = [
   {
     id: 2,
     title: 'Work Tasks',
@@ -16,63 +18,55 @@ let lists = [
     title: 'Books to Read',
   },
 ]
-const todosByListId = new Map()
+const db = {
+  lists: [...initialState],
+  todos: [],
+}
 
 export const getLists = () => {
-  return lists
+  return db.lists
 }
 
 export const createList = (title) => {
   const newList = {
-    id: lists.length ? Math.max(...lists.map((l) => l.id)) + 1 : 1,
-    title: title.trim(),
+    id: uuidv4(),
+    title: title,
   }
-  lists.push(newList)
-  todosByListId.set(newList.id, [])
+  db.lists.push(newList)
   return newList
 }
 
 export const updateList = (id, updates) => {
-  const list = lists.find((l) => l.id === id)
+  const list = db.lists.find((l) => l.id === id)
   if (!list) return null
-  if (typeof updates.title === 'string') {
-    list.title = updates.title.trim()
-  }
+  list.title = updates.title
   return list
 }
 
 export const deleteList = (id) => {
-  const initialLength = lists.length
-  lists = lists.filter((l) => l.id !== id)
-  todosByListId.delete(id)
-  return lists.length !== initialLength
+  const initialLength = db.lists.length
+  db.lists = db.lists.filter((l) => l.id !== id)
+  db.todos = db.todos.filter((l) => l.listId !== id)
+  return db.lists.length !== initialLength
 }
 
 export const getTodos = (listId) => {
-  return todosByListId.get(listId) || []
+  return db.todos.filter((t) => t.listId === listId)
 }
 
 export const createTodo = (listId, text) => {
-  let todos = todosByListId.get(listId)
-
-  if (!todos) {
-    todos = []
-    todosByListId.set(listId, todos)
-  }
   const newTodo = {
-    id: todos.length ? Math.max(...todos.map((t) => t.id)) + 1 : 1,
-    text: text.trim(),
+    listId,
+    id: uuidv4(),
+    text: text,
     completed: false,
   }
-  todos.push(newTodo)
+  db.todos.push(newTodo)
   return newTodo
 }
 
-export const updateTodo = (listId, todoId, updates) => {
-  const todos = todosByListId.get(listId)
-  if (!todos) return null
-
-  const todo = todos.find((t) => t.id === todoId)
+export const updateTodo = (todoId, updates) => {
+  const todo = db.todos.find((t) => t.id === todoId)
   if (!todo) return null
 
   if (typeof updates.text === 'string') todo.text = updates.text.trim()
@@ -80,19 +74,13 @@ export const updateTodo = (listId, todoId, updates) => {
   return todo
 }
 
-export const deleteTodo = (listId, todoId) => {
-  const todos = todosByListId.get(listId)
-  if (!todos) return false
-
-  const initialLength = todos.length
-  const newTodos = todos.filter((t) => t.id !== todoId)
-  if (newTodos.length === initialLength) return false
-
-  todosByListId.set(listId, newTodos)
-  return true
+export const deleteTodo = (todoId) => {
+  const initialLength = db.todos.length
+  db.todos = db.todos.filter((t) => t.id !== todoId)
+  return db.todos.length !== initialLength
 }
 
 export const clearData = () => {
-  lists = []
-  todosByListId.clear()
+  db.lists = []
+  db.todos = []
 }

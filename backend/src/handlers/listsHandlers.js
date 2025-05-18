@@ -1,9 +1,4 @@
-import {
-  getLists as getListsService,
-  createList as createListService,
-  updateList as updateListService,
-  deleteList as deleteListService,
-} from '../services/listsService.js'
+import * as todoService from '../services/listsService.js'
 import Joi from 'joi'
 
 const createListSchema = Joi.object({
@@ -14,10 +9,10 @@ const updateListSchema = Joi.object({
   title: Joi.string().min(1).optional(),
 })
 
-export const listIdSchema = Joi.number().integer().required()
+export const listIdSchema = Joi.string().uuid().required()
 
 export const getLists = (_, res) => {
-  const lists = getListsService()
+  const lists = todoService.getLists()
   res.status(200).json({
     success: true,
     message: 'Lists retrieved successfully',
@@ -35,7 +30,7 @@ export const createList = (req, res) => {
     })
   }
 
-  const newList = createListService(value.title)
+  const newList = todoService.createList(value.title)
   res.status(201).json({
     success: true,
     message: 'List created successfully',
@@ -60,7 +55,7 @@ export const updateList = (req, res) => {
     })
   }
 
-  const updated = updateListService(listId, { title: value.title })
+  const updated = todoService.updateList(listId, { title: value.title })
   if (!updated) {
     return res.status(404).json({
       success: false,
@@ -85,7 +80,7 @@ export const deleteList = (req, res) => {
     })
   }
 
-  const deleted = deleteListService(listId)
+  const deleted = todoService.deleteList(listId)
   if (!deleted) {
     return res.status(404).json({
       success: false,

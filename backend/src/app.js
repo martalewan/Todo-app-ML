@@ -1,14 +1,12 @@
 import express from 'express'
 import cors from 'cors'
-import todosRouter from './routes/todos.js'
-import listsRouter from './routes/lists.js'
+import routes from './routes/routes.js'
 
 const app = express()
 
 app.use(cors())
 app.use(express.json())
 
-app.use('/lists', listsRouter)
-app.use('/lists/:listId/todos', todosRouter)
+app.use('/lists', routes)
 
 export default app

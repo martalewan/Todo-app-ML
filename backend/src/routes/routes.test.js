@@ -20,11 +20,18 @@ describe('GET /lists/:listId/todos', () => {
 
     const response = await api.get(`/lists/${list.id}/todos`)
     expect(response.statusCode).toBe(200)
-    expect(response.body.data).toEqual([{ id: 1, text: 'Todo 1', completed: false }])
+    expect(response.body.data).toEqual([
+      {
+        listId: list.id,
+        id: expect.any(String),
+        text: 'Todo 1',
+        completed: false,
+      },
+    ])
   })
 
   it('should return 404 for non-existing list', async () => {
-    const response = await api.get('/lists/999/todos')
+    const response = await api.get('/lists/00000000-0000-0000-0000-000000000000/todos')
     expect(response.statusCode).toBe(404)
   })
 })
@@ -37,7 +44,8 @@ describe('POST /lists/:listId/todos', () => {
 
     expect(response.statusCode).toBe(201)
     expect(response.body.data).toEqual({
-      id: 1,
+      listId: list.id,
+      id: expect.any(String),
       text: 'New Todo',
       completed: false,
     })
@@ -50,7 +58,9 @@ describe('POST /lists/:listId/todos', () => {
   })
 
   it('should return 404 if list not found', async () => {
-    const response = await api.post('/lists/999/todos').send({ text: 'Test' })
+    const response = await api
+      .post('/lists/00000000-0000-0000-0000-000000000000/todos')
+      .send({ text: 'Test' })
     expect(response.statusCode).toBe(404)
   })
 })
@@ -69,12 +79,14 @@ describe('DELETE /lists/:listId/todos/:todoId', () => {
 
   it('should return 404 if todo not found', async () => {
     const list = await createList()
-    const response = await api.delete(`/lists/${list.id}/todos/999`)
+    const response = await api.delete(
+      `/lists/${list.id}/todos/00000000-0000-0000-0000-000000000000`,
+    )
     expect(response.statusCode).toBe(404)
   })
 
   it('should return 400 if invalid IDs', async () => {
-    const response = await api.delete('/lists/abc/todos/xyz')
+    const response = await api.delete('/lists/not-a-uuid/todos/not-a-uuid')
     expect(response.statusCode).toBe(400)
   })
 })
@@ -90,6 +102,7 @@ describe('PUT /lists/:listId/todos/:todoId', () => {
 
     expect(updateResponse.statusCode).toBe(200)
     expect(updateResponse.body.data).toEqual({
+      listId: list.id,
       id: todo.id,
       text: 'Updated Todo',
       completed: true,
@@ -98,12 +111,14 @@ describe('PUT /lists/:listId/todos/:todoId', () => {
 
   it('should return 404 if todo not found', async () => {
     const list = await createList()
-    const response = await api.put(`/lists/${list.id}/todos/999`).send({ text: 'Updated' })
+    const response = await api
+      .put(`/lists/${list.id}/todos/00000000-0000-0000-0000-000000000000`)
+      .send({ text: 'Updated' })
     expect(response.statusCode).toBe(404)
   })
 
   it('should return 400 if invalid IDs', async () => {
-    const response = await api.put('/lists/abc/todos/xyz').send({ text: 'Updated' })
+    const response = await api.put('/lists/not-a-uuid/todos/not-a-uuid').send({ text: 'Updated' })
     expect(response.statusCode).toBe(400)
   })
 })
