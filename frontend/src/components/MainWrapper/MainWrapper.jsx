@@ -1,13 +1,30 @@
 import { MainAppBar } from '../MainAppBar/MainAppBar'
-import * as S from './MainWrapper.style'
+import { Box } from '@mui/material'
 
 export const MainWrapper = ({ children }) => {
   return (
-    <S.MainWrapperRoot>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        width: '100vw',
+        overflow: 'hidden',
+      }}
+    >
       <MainAppBar />
-      <S.CenterContentWrapper>
-        <S.ContentWrapper>{children}</S.ContentWrapper>
-      </S.CenterContentWrapper>
-    </S.MainWrapperRoot>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          overflow: 'hidden',
+          width: '100%',
+          alignContent: 'flex-start',
+          justifyContent: 'center',
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
   )
 }

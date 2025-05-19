@@ -34,7 +34,7 @@ export const TodoItem = ({ index, activeListId, todo, onSetTodos }) => {
   return (
     <Box
       key={todo.id}
-      style={{
+      sx={{
         display: 'flex',
         gap: '1rem',
         alignItems: 'center',

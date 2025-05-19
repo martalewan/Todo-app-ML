@@ -1,7 +1,8 @@
-import { Fragment, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { TodosCard } from '../TodosCard/TodosCard'
-import { fetchLists } from '../../api/todos'
+import { fetchLists, deleteList } from '../../api/todos'
 import { ListsCard } from '../ListsCard/ListsCard'
+import { Box } from '@mui/material'
 
 export const TodoManager = ({ style }) => {
   const [lists, setLists] = useState([])
@@ -19,8 +20,29 @@ export const TodoManager = ({ style }) => {
     loadLists()
   }, [])
 
+  const handleDeleteList = async (listId) => {
+    try {
+      await deleteList(listId)
+      setLists((prev) => prev.filter((list) => list.id !== listId))
+
+      if (activeList?.id === listId) {
+        setActiveList(null)
+      }
+    } catch (error) {
+      console.error('Error deleting list:', error)
+    }
+  }
   return (
-    <Fragment>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        height: '100%',
+        width: '100%',
+        maxWidth: 1200,
+        flexWrap: 'wrap',
+      }}
+    >
       <ListsCard
         style={style}
         lists={lists}
@@ -30,9 +52,20 @@ export const TodoManager = ({ style }) => {
         onListAdded={(newList) => {
           setLists((prev) => [...prev, newList])
         }}
+        handleDeleteList={handleDeleteList}
         activeListId={activeList?.id}
       />
-      {activeList && <TodosCard style={style} activeList={activeList} />}
-    </Fragment>
+      {activeList && (
+        <TodosCard
+          sx={{
+            flex: 2,
+            maxHeight: '100%',
+            overflowY: 'auto',
+          }}
+          style={style}
+          activeList={activeList}
+        />
+      )}
+    </Box>
   )
 }

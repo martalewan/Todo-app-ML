@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardActions, Typography, Box } from '@mui/material'
+import { Card, CardContent, CardActions, Typography, Box, CardHeader } from '@mui/material'
 import { fetchTodos, addTodo } from '../../api/todos'
 import { TodoItem } from '../TodoItem/TodoItem'
 import { AddNewItem } from '../AddNewItem/AddNewItem'
@@ -37,11 +37,30 @@ export const TodosCard = ({ style, activeList }) => {
     }
   }
   return (
-    <Card style={style} sx={{ margin: '0 1rem', gap: 1 }}>
-      <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Typography component='h2' fontWeight='bold'>
-          {activeList.title}
-        </Typography>
+    <Card
+      style={style}
+      sx={{
+        flex: 1,
+        minWidth: 300,
+        display: 'flex',
+        flexDirection: 'column',
+        maxHeight: '100%',
+      }}
+    >
+      <CardHeader
+        title={
+          <Typography component='h2' fontWeight='bold'>
+            {activeList.title}
+          </Typography>
+        }
+      />
+      <CardContent
+        sx={{
+          flex: 1,
+          overflowY: 'auto',
+          p: 1,
+        }}
+      >
         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 2 }}>
           {todos &&
             todos.map((todo, index) => (
@@ -53,17 +72,22 @@ export const TodosCard = ({ style, activeList }) => {
                 onSetTodos={(value) => setTodos(value)}
               />
             ))}
-
-          <CardActions>
-            <AddNewItem
-              type={'todo'}
-              value={newTodo}
-              onChange={(value) => setNewTodo(value)}
-              onSubmit={handleSubmit}
-            />
-          </CardActions>
         </Box>
       </CardContent>
+
+      <CardActions
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
+      >
+        <AddNewItem
+          type={'todo'}
+          value={newTodo}
+          onChange={(value) => setNewTodo(value)}
+          onSubmit={handleSubmit}
+        />
+      </CardActions>
     </Card>
   )
 }
