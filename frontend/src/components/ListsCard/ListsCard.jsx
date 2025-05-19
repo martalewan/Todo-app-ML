@@ -63,7 +63,6 @@ export const ListsCard = ({
 
       <CardContent
         sx={{
-          flex: 1,
           overflowY: 'auto',
           p: 0,
         }}
@@ -72,7 +71,7 @@ export const ListsCard = ({
           {lists.map((list) => {
             const isActive = activeListId === list.id
             return (
-              <Box display={'flex'} alignItems='center' key={list.id}>
+              <Box key={list.id} display={'flex'} alignItems='center'>
                 <ListItemButton
                   onClick={() => onListClicked(list.id)}
                   selected={isActive}
