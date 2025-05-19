@@ -40,7 +40,6 @@ export const TodoManager = ({ style }) => {
         height: '100%',
         width: '100%',
         maxWidth: 1200,
-        flexWrap: 'wrap',
       }}
     >
       <ListsCard
@@ -55,16 +54,7 @@ export const TodoManager = ({ style }) => {
         handleDeleteList={handleDeleteList}
         activeListId={activeList?.id}
       />
-      {activeList && (
-        <TodosCard
-          sx={{
-            flex: 2,
-            overflowY: 'auto',
-          }}
-          style={style}
-          activeList={activeList}
-        />
-      )}
+      {activeList && <TodosCard style={style} activeList={activeList} />}
     </Box>
   )
 }

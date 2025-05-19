@@ -1,4 +1,4 @@
-import { Typography, TextField, Button, Checkbox, Box } from '@mui/material'
+import { TextField, Button, Checkbox, Box } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { deleteTodo, updateTodo } from '../../api/todos'
 

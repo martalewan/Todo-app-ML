@@ -40,11 +40,11 @@ export const TodosCard = ({ style, activeList }) => {
     <Card
       style={style}
       sx={{
-        flex: 1,
         display: 'flex',
         flexDirection: 'column',
         height: 'calc(100% - 2rem)',
         margin: '1rem',
+        flexGrow: 2,
       }}
     >
       <CardHeader
