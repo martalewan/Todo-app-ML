@@ -41,7 +41,6 @@ export const TodoItem = ({ index, activeListId, todo, onSetTodos }) => {
         justifyContent: 'center',
       }}
     >
-      <Typography variant='h6'>{index + 1}</Typography>
       <TextField
         size='small'
         sx={{ flexGrow: 1 }}

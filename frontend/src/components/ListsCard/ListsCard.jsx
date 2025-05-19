@@ -44,13 +44,13 @@ export const ListsCard = ({
 
   return (
     <Card
-      style={style}
       sx={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        maxHeight: '100%',
+        height: 'calc(100% - 2rem)',
         maxWidth: '30%',
+        margin: '1rem',
       }}
     >
       <CardHeader

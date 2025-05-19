@@ -59,7 +59,6 @@ export const TodoManager = ({ style }) => {
         <TodosCard
           sx={{
             flex: 2,
-            maxHeight: '100%',
             overflowY: 'auto',
           }}
           style={style}

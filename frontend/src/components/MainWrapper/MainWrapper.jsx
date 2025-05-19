@@ -19,6 +19,7 @@ export const MainWrapper = ({ children }) => {
           display: 'flex',
           overflow: 'hidden',
           width: '100%',
+          height: '100%',
           alignContent: 'flex-start',
           justifyContent: 'center',
         }}

@@ -41,10 +41,10 @@ export const TodosCard = ({ style, activeList }) => {
       style={style}
       sx={{
         flex: 1,
-        minWidth: 300,
         display: 'flex',
         flexDirection: 'column',
-        maxHeight: '100%',
+        height: 'calc(100% - 2rem)',
+        margin: '1rem',
       }}
     >
       <CardHeader
@@ -58,7 +58,6 @@ export const TodosCard = ({ style, activeList }) => {
         sx={{
           flex: 1,
           overflowY: 'auto',
-          p: 1,
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 2 }}>
