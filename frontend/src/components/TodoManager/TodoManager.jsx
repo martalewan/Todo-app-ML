@@ -36,10 +36,10 @@ export const TodoManager = ({ style }) => {
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'row',
         height: '100%',
         width: '100%',
         maxWidth: 1200,
+        flexDirection: { xs: 'column', md: 'row' },
       }}
     >
       <ListsCard
